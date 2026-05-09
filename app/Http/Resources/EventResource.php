@@ -1,0 +1,27 @@
+<?php
+
+namespace App\Http\Resources;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class EventResource extends JsonResource
+{
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(Request $request): array
+    {
+        return [
+            'uuid' => $this->uuid,
+            'name' => $this->category_name,
+            'description' => $this->description,
+            //'event_type' => $this->event_type,
+            'location' => $this->location,
+
+            'ticket' => new TicketResource($this->whenLoaded('ticket')),
+        ];
+    }
+}

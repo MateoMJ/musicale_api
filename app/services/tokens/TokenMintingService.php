@@ -21,8 +21,8 @@ class TokenMintingService
     {
         $deviceName = 'To be defined'; //Not needed for now
 
-        $previousToken = AccessToken::select('id','name','user_id')->where('user_id', $user->id)->
-        where('name', $deviceName)->first();
+        $previousToken = AccessToken::select('id','name','user_id')->where('user_id', $user->id)
+        ->where('name', $deviceName)->first();
         if($previousToken){
             $previousToken->delete();
         }

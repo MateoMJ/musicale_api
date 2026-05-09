@@ -20,12 +20,11 @@ class Event extends Model
 
     public function calendar(): BelongsTo
     {
-        return $this->belongsTo(Calendar::Class);
+        return $this->belongsTo(Calendar::Class, 'date_id');
     }
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::Class);
     }
-
 }
