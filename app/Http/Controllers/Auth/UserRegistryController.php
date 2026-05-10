@@ -12,9 +12,14 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\Http\JsonResponse;
+use App\Services\UserRegistrationService;
 
-class RegisteredUserController extends Controller
+class UserRegistryController extends Controller
 {
+    public function __construct(UserRegistrationService $userRegistrationService)
+    {
+        $this->userRegistrationService = $userRegistrationService;
+    }
 
     /**
      * Handle an incoming registration request.
@@ -27,30 +32,20 @@ class RegisteredUserController extends Controller
      * filling of a form.
      */
     public function register(Request $request): JsonResponse
-    {   
-        $user = User::find(1);
-        if($user !== NULL){
-            return response()->json(['message' => 'The requested resource does not exist'], 404);
-        }
+    {
+        $selectedRank = "user";
 
-        $request->validate([
+        $reqInfo = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'last_name' => ['string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'last_name' => $request->last_name,
-            'password' => Hash::make($request->password),
-        ]);
+        $this->userRegistrationService->createUser($reqInfo, $selectedRank);
 
-        $user->rank = ('admin');
-        $user->save();
-
-        event(new Registered($user));
+        //$user->rank = ('admin');
+        //$user->save();
 
         return response()->json([
             'message' => 'Successfully created the user'

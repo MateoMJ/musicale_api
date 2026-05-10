@@ -16,12 +16,12 @@ class EventResource extends JsonResource
     {
         return [
             'uuid' => $this->uuid,
-            'name' => $this->category_name,
+            'name' => $this->name,
             'description' => $this->description,
             //'event_type' => $this->event_type,
             'location' => $this->location,
 
-            'ticket' => new TicketResource($this->whenLoaded('ticket')),
+            'ticket' => new EventResource($this->whenLoaded('event')),
         ];
     }
 }

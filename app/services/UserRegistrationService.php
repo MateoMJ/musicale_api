@@ -3,6 +3,7 @@
 namespace App\Services;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class UserRegistrationService
 {
@@ -13,10 +14,13 @@ class UserRegistrationService
 
     public function createUser(array $userInfo, ?String $selectedRank): void
     {
+        $uuid = Str::uuid();
         $newUser = User::create([
+            'uuid' => $uuid,
             'name' => $userInfo['name'],
             'last_name' => $userInfo['last_name'],
             'email' => $userInfo['email'],
+            'rank' => $selectedRank,
             'password' => Hash::make($userInfo['password']),
         ]);
 

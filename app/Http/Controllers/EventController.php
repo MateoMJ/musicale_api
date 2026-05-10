@@ -12,21 +12,22 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Resources\EventResource;
 use App\Services\EventService;
 
-class TicketCategoryController extends Controller
+class EventController extends Controller
 {   
-    public function __construct(EventService $EventService)
+    public function __construct(EventService $eventService)
     {
         $this->eventService = $eventService;
     }
 
     public function index(Request $request): JsonResponse
     {
-        $userId = $accessToken->user_uuid;
-        $events = $this->eventService->getIndex($userId);
+        $user = $request->user();
+        $userUuid = $user->uuid;   
+        $events = $this->eventService->getIndex($userUuid);
 
-        return response()->json([
-            'events' => new EventResource($events)
-        ], 200);
+        return EventResource::collection($events)
+        ->response()
+        ->setStatusCode(200);
     }
 
     public function show(Request $request, $uuid): JsonResponse
@@ -45,10 +46,11 @@ class TicketCategoryController extends Controller
             'description' => ['required','string'],
             'hour' => ['required','string'],
             'location' => ['required','string'],
+            'event_type' => ['required','string'],
         ]);
 
         $user = $request->user();
-        $uuid = $user->uuid;      
+        $userUuid = $user->uuid;      
 
         $this->eventService->storeEvent($reqInfo, $userUuid);
 
@@ -65,10 +67,11 @@ class TicketCategoryController extends Controller
             'description' => ['required','string'],
             'hour' => ['required','string'],
             'location' => ['required','string'],
+            'event_type' => ['required','string'],
         ]);
 
         $event = $this->eventService->getEvent($uuid);
-        $this->eventService->editEvent($event);
+        $this->eventService->editEvent($event, $reqInfo);
 
         return response()->json([
             'message' => 'Successfully edited category'

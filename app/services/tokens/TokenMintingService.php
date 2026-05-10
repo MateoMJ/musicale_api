@@ -17,11 +17,11 @@ class TokenMintingService
 
     }
 
-    public function grantAccessToken(Int $userId)
+    public function grantAccessToken(String $userUuid)
     {
         $deviceName = 'To be defined'; //Not needed for now
 
-        $previousToken = AccessToken::select('id','name','user_id')->where('user_id', $user->id)
+        $previousToken = AccessToken::select('id','name','user_uuid')->where('user_uuid', $userUuid)
         ->where('name', $deviceName)->first();
         if($previousToken){
             $previousToken->delete();
@@ -33,15 +33,15 @@ class TokenMintingService
         $expiry = Carbon::now();
         $expiry->add(10, 'minute');
 
-        $AccessToken = RefreshToken::create([
+        $accessToken = AccessToken::create([
             'name' => ($deviceName),
             'token' => ($hashedToken),
             'last_used_at' => (NULL),
             'expires_at' => ($expiry),
-            'user_id' => ($user->id),
+            'user_uuid' => ($userUuid),
         ]);
 
-        $tokenRow = $refreshToken->id . 'dbr';
+        $tokenRow = $accessToken->id . 'dbr';
         $tokenPlainText = $tokenRow . $tokenPlainText;
 
         return $tokenPlainText;
@@ -52,7 +52,7 @@ class TokenMintingService
 
         $deviceName = 'To be defined'; //Not needed for now
 
-        $previousToken = RefreshToken::select('id','name','user_id')->where('user_id', $user->id)->
+        $previousToken = RefreshToken::select('id','name','user_uuid')->where('user_uuid', $user->uuid)->
         where('name', $deviceName)->first();
         if($previousToken){
             $previousToken->delete();
@@ -69,7 +69,7 @@ class TokenMintingService
             'token' => ($hashedToken),
             'last_used_at' => (NULL),
             'expires_at' => ($expiry),
-            'user_id' => ($user->id),
+            'user_uuid' => ($user->uuid),
         ]);
 
         $tokenRow = $refreshToken->id . 'dbr';

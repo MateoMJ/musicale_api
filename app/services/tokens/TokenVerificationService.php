@@ -30,14 +30,15 @@ class TokenVerificationService
             $tokenValidity = TRUE;
         }
 
-        $userId = $tokenInfo->user_id;
+        $userUuid = $tokenInfo->user_uuid;
         
-        return [$tokenValidity, $userId];
+        return [$tokenValidity, $userUuid];
     }
 
-    public function verifyAccessToken(String $accessToken)
+    //Not called everywhere, this is handled in middleware, but we have the function just in case for later use
+    public function verifyAccessToken(String $tokenValue)
     {
-        [$id, $token] = explode('dbr', $accessToken, 2);
+        [$id, $token] = explode('dbr', $tokenValue, 2);
         $tokenInfo = AccessToken::where('id', $id)->firstOrFail();
 
         if (hash('sha256', $token) !== $tokenInfo->token) {
@@ -54,8 +55,8 @@ class TokenVerificationService
             $tokenValidity = TRUE;
         }
 
-        $userId = $tokenInfo->user_id;
+        $userUuid = $tokenInfo->user_uuid;
         
-        return [$tokenValidity, $userId];
+        return $tokenValidity;
     }
 }

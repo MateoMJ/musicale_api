@@ -6,6 +6,8 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Carbon\Carbon;
+use App\Models\tokens\AccessToken;
+use App\Services\tokens\TokenVerificationService;
 
 class IsAccessTokenValid
 {
@@ -22,13 +24,26 @@ class IsAccessTokenValid
         }
 
         $tokenValue = substr($authHeader, 7);
-        $token = AccessToken::where('token', $tokenValue)->first();
 
-        if (!$token) {
-            return response()->json(['error' => 'Invalid token.'], 401);
+        [$id, $tokenReceived] = explode('dbr', $tokenValue, 2);
+        $token = AccessToken::where('id', $id)->firstOrFail();
+
+        if (hash('sha256', $tokenReceived) !== $token->token) {
+            $tokenValidity = False;
+            return $tokenValidity;
         }
-        if (Carbon::now()->greaterThan($token->expires_at)) {
-            return response()->json(['error' => 'Token expired.'], 401);
+
+        $now = Carbon::now();
+        $expiration = $token->expires_at;
+
+        if($now->greaterThan($expiration)){
+            $tokenValidity = FALSE;
+        }else{
+            $tokenValidity = TRUE;
+        }
+        
+        if ($tokenValidity == False) {
+            return response()->json(['error' => 'Token is invalid.'], 401);
         }
 
         $request->setUserResolver(function () use ($token) {

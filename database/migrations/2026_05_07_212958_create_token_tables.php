@@ -18,7 +18,7 @@ return new class extends Migration
             $table->timestamp('last_used_at')->nullable();
             $table->timestamp('expires_at')->nullable()->index();
 
-            $table->foreignId('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreignUuid('user_uuid')->references('uuid')->on('users');
         });
 
         Schema::create('access_tokens', function (Blueprint $table) {
@@ -28,7 +28,7 @@ return new class extends Migration
             $table->timestamp('last_used_at')->nullable();
             $table->timestamp('expires_at')->nullable()->index();
 
-            $table->foreignId('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreignUuid('user_uuid')->references('uuid')->on('users');
         });
     }
 

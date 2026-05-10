@@ -19,14 +19,14 @@ use App\Models\tokens\AccessToken;
 class TokenAuthController extends Controller
 {
     public function __construct(
-        TokenMintingService $tokenMintingService, LogService $logService, 
+        TokenMintingService $tokenMintingService,
         TokenVerificationService $tokenVerificationService
         ){
         $this->tokenMintingService = $tokenMintingService;
         $this->tokenVerificationService = $tokenVerificationService;
     }
     
-    public function authenticate(LoginRequest $request): JsonResponse
+    public function authenticate(Request $request): JsonResponse
     {
         $email = request('email');
         $password = request('password');
@@ -48,13 +48,13 @@ class TokenAuthController extends Controller
 
     public function AuthenticateWithRefreshToken($refreshToken): JsonResponse
     {   
-        [$tokenValidity, $userId] = $this->tokenVerificationService->verifyRefreshToken($refreshToken);
+        [$tokenValidity, $userUuid] = $this->tokenVerificationService->verifyRefreshToken($refreshToken);
 
         if($tokenValidity == FALSE){
             return response()->json(['error' => 'Unauthenticated.'], 401);
         }
-
-        $accessToken = $this->tokenMintingService->grantAccessToken($userId);
+        
+        $accessToken = $this->tokenMintingService->grantAccessToken($userUuid);
 
         return response()->json([ 
             'token' => $accessToken 
@@ -67,7 +67,7 @@ class TokenAuthController extends Controller
 
         $user->tokens()->delete();
 
-        $refreshTokens = RefreshToken::where('user_id', $user->id)->get();
+        $refreshTokens = RefreshToken::where('user_uuid', $user->uuid)->get();
         foreach( $refreshTokens as $token){
         $token->delete();
         }

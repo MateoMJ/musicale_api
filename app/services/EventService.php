@@ -1,4 +1,7 @@
 <?php
+namespace App\Services;
+use App\Models\Event;
+use Illuminate\Support\Str;
 
 class EventService
 {
@@ -7,30 +10,31 @@ class EventService
 
     }
     
-    public function getIndex(String $userId)
+    public function getIndex(String $userUuid)
     {
         $events = Event::select('uuid','name','description','hour','location')
-        ->where('user_uuid', $userId)->simplePaginate(4);
+        ->where('user_uuid', $userUuid)->simplePaginate(4);
 
         return $events;
     }
 
-    public function getEvent(String $userId)
+    public function getEvent(String $uuid)
     {
-        $event = Event::where('user_uuid', $userId)->firstOrFail();
+        $event = Event::where('uuid', $uuid)->firstOrFail();
 
         return $event;
     }
 
-    public function storeEvent(Array $reqInfo, String $uuid): void
+    public function storeEvent(Array $reqInfo, String $userUuid): void
     {
-        $event->create([
-            'uuid' => Str::fastUuid(),
+        $event = Event::create([
+            'uuid' => Str::uuid(),
             'name' => $reqInfo['name'],
             'description' => $reqInfo['description'],
             'event_type' => $reqInfo['event_type'],
             'location' => $reqInfo['location'],
             'hour' => $reqInfo['hour'],
+            'user_uuid' => $userUuid,
         ]);
 
         return;
