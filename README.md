@@ -26,6 +26,6 @@ Includes scaffolding for future features:
 - JWT based authentication
 
 ## Database Schema 
+<img width="811" height="746" alt="DB Schema" src="https://github.com/user-attachments/assets/8cafa919-9f3d-4edf-a2cc-7c3b487193c4" />
 
-![Database Schema](images\DB Schema.png "Database Schema")
 
